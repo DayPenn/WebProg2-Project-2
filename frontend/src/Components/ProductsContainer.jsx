@@ -6,8 +6,8 @@ export default function ProductsContainer({
   handleRemoveQuantity,
   handleAddToCart,
   productQuantityArray,
-  handleOnDelete, 
-  setFormData, 
+  handleOnDelete,
+  setFormData,
   setIsEditing,
 }) {
   return (
@@ -18,7 +18,8 @@ export default function ProductsContainer({
           productData={product}
           productQuantity={
             productQuantityArray.find((prod) => prod.id === product._id)
-              ? productQuantityArray.find((prod) => prod.id === product._id).quantity // if exists, set to prod quantity
+              ? productQuantityArray.find((prod) => prod.id === product._id)
+                  .quantity // if exists, set to prod quantity
               : 0 // else quantity = 0
           }
           handleAddQuantity={handleAddQuantity}

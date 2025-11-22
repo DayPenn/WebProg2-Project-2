@@ -9,9 +9,6 @@ import QuantityCounter from "./QuantityCounter";
 // Dayna Pennock
 // WEb Programming 2 - Project 2 due November 21, 2025
 
-// DEPENDS ON PRODUCTS --------------------------> //
-
-// products comes from file in App.jsx
 export default function GroceriesAppContainer() {
   // products <-- no longer used, NOW using localHost:3000 to grab from server
 
@@ -25,9 +22,9 @@ export default function GroceriesAppContainer() {
     image: "",
     price: "",
     productQuantity: "",
-    _id:""
+    _id: "",
   });
-  const [isEditing, setIsEditing] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false);
   const [postResponse, setPostResponse] = useState(null); // to be able to use date to fix bug
 
   // useEffects
@@ -43,7 +40,7 @@ export default function GroceriesAppContainer() {
       console.log(response.data);
       setProductsData(response.data);
 
-      // map out each product customer could add to cart, start all @ 0
+      // map out each product customer could add to cart, start all qty @ 0
       const initialQuantities = response.data.map((product) => ({
         id: product._id, // using the top one w/_ in mongo, not sure about second one...
         quantity: 0,
@@ -54,19 +51,18 @@ export default function GroceriesAppContainer() {
     }
   };
 
-// instead of repeating code, made it a function
-const handleResetForm = () => {
-  setFormData({
-    productName: "",
-    brand: "",
-    image: "",
-    price: "",
-    productQuantity: "",
-    _id:""
-  });
-  setIsEditing(false);
-}; 
-
+  // instead of repeating code, made it a function
+  const handleResetForm = () => {
+    setFormData({
+      productName: "",
+      brand: "",
+      image: "",
+      price: "",
+      productQuantity: "",
+      _id: "",
+    });
+    setIsEditing(false);
+  };
 
   // handle the submission of product information
   const handleOnSubmit = async (e) => {
@@ -74,8 +70,8 @@ const handleResetForm = () => {
     try {
       if (isEditing) {
         await handleOnUpdate(formData._id); // make changes
-        handleResetForm();  // use function instead of repeating code
-      }else{
+        handleResetForm(); // use function instead of repeating code
+      } else {
         await axios.post("http://localhost:3000/products", formData);
         handleResetForm();
       }
@@ -87,23 +83,23 @@ const handleResetForm = () => {
 
   // handle onChange event for the product submission form
   const handleOnChange = (e) => {
-    setFormData((prevData) => ({ 
-      ...prevData, 
-      [e.target.name]: e.target.value 
+    setFormData((prevData) => ({
+      ...prevData,
+      [e.target.name]: e.target.value,
     }));
   };
 
   // ADD to quantity
   const handleAddQuantity = (productId, mode) => {
     if (mode === "cart") {
-      setCartList((prev) => 
-        prev.map((product) => 
-          (product.id === productId) 
-            ?{ ...product, quantity: product.quantity + 1 }
+      setCartList((prev) =>
+        prev.map((product) =>
+          product.id === productId
+            ? { ...product, quantity: product.quantity + 1 }
             : product
-          )
-        );
-      } else if (mode === "product") {
+        )
+      );
+    } else if (mode === "product") {
       const newProductQuantity = productQuantity.map((product) => {
         if (product.id === productId) {
           return { ...product, quantity: product.quantity + 1 };
@@ -136,65 +132,40 @@ const handleResetForm = () => {
       return;
     }
   };
-/*
+
   const handleAddToCart = (productId) => {
-    const product = productsData.find((product) => product._id === productId);
-    const pQuantity = productQuantity.find((product) => product.id === productId);
-    const newCartList = [...cartList];
-    const productInCart = newCartList.find((product) => product.id === productId);
-  
-    if (pQuantity.quantity === 0) {
-      alert(`Please select quantity for ${product.productName}`); // must select something to be able to add to cart
+    const productToAdd = productsData.find((prod) => prod._id === productId);
+    const productQty = productQuantity.find((prod) => prod.id === productId);
+
+    if (productQty.quantity === 0) {
+      alert(`Please select quantity for ${productToAdd.productName}`); // must select something to be able to add to cart
       return;
-    } else if (productInCart) {
-      productInCart.quantity += pQuantity.quantity;   
-    } else {
-      newCartList.push({ ...product, quantity: pQuantity.quantity });
     }
-    setCartList(newCartList);
+
+    setCartList((prevCart) => {
+      // check to see if there's an item in the cart that matches id
+      const productInCart = prevCart.find((item) => item.id === productId);
+      // if nothing in the cart matches, negative logic is true, does NOT exist so add it
+
+      if (!productInCart) {
+        return [
+          ...prevCart, // spread existing cart before adding
+          {
+            ...productToAdd,
+            id: productToAdd._id,
+            quantity: productQty.quantity,
+          },
+        ];
+      } else {
+        // if it IS already in the cart, add to qty
+        return prevCart.map((item) =>
+          item.id === productId
+            ? { ...item, quantity: item.quantity + productQty.quantity }
+            : item
+        );
+      }
+    });
   };
-*/
-
-
-
-
-
-
-//TRIED TO CHANGE addToCart to be exactly like my old code but broke something somehow...
-//
-
-const handleAddToCart = (productId) => {
-  const productToAdd = productsData.find((prod)=> prod._id === productId);
-  const productQty = productQuantity.find((prod)=> prod.id === productId);
-
-  if (productQty.quantity === 0) {
-    alert(`Please select quantity for ${productToAdd.productName}`); // must select something to be able to add to cart
-    return;
-  }
-
-  setCartList((prevCart)=>{
-    // check to see if there's an item in the cart that matches id
-    const productInCart = prevCart.find((item) => item.id === productId);
-    // if nothing in the cart matches, negative logic is true, does NOT exist so add it
-    
-    if (!productInCart) {
-      return [
-        ...prevCart, // spread existing cart before adding 
-        { ...productToAdd,
-          id: productToAdd._id,
-          quantity: productQty.quantity
-        },
-      ];
-    } else { // if it IS already in the cart, add to qty
-      return prevCart.map((item)=>
-      (item.id===productId) 
-      ? {...item, quantity: item.quantity + productQty.quantity}
-      : item
-    );
-    }
-  });
-};
-
 
   // everything that does not match productId remains in cart
   const handleRemoveFromCart = (productId) => {
@@ -209,8 +180,12 @@ const handleAddToCart = (productId) => {
   // handle UPDATING the api patch route --> PATCH(oldId), not PUT(newId)
   const handleOnUpdate = async (id) => {
     try {
-      const result = await axios.patch(`http://localhost:3000/products/${id}`, formData);
-      setPostResponse({ // to fix bug -- we use date to be unique, change without refresh
+      const result = await axios.patch(
+        `http://localhost:3000/products/${id}`,
+        formData
+      );
+      setPostResponse({
+        // to fix bug -- we use date to be unique, change without refresh
         message: result.data.message,
         date: result.data.date,
       });
@@ -228,9 +203,6 @@ const handleAddToCart = (productId) => {
       console.log(error.message);
     }
   };
-
-
-
 
   return (
     <div>

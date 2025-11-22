@@ -6,7 +6,7 @@ export default function ProductCard({
   handleAddQuantity,
   handleRemoveQuantity,
   handleAddToCart,
-  handleOnDelete, 
+  handleOnDelete,
   setFormData,
   setIsEditing,
 }) {
@@ -27,19 +27,23 @@ export default function ProductCard({
         Add to Cart
       </button>
 
-      <button onClick={()=>{
-        setFormData({
-        productName: productData.productName,
-        brand: productData.brand,
-        image: productData.image, 
-        price: productData.price,
-        productQuantity, // don't need to write it twice 
-        _id: productData._id,
-        });
-        setIsEditing(true);
-      }}>EDIT</button>
+      <button
+        onClick={() => {
+          setFormData({
+            productName: productData.productName,
+            brand: productData.brand,
+            image: productData.image,
+            price: productData.price,
+            productQuantity, // don't need to write it twice
+            _id: productData._id,
+          });
+          setIsEditing(true);
+        }}
+      >
+        EDIT
+      </button>
 
-      <button onClick={()=> handleOnDelete(productData._id)}>DELETE</button>
+      <button onClick={() => handleOnDelete(productData._id)}>DELETE</button>
     </div>
   );
 }
