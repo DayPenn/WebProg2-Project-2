@@ -1,4 +1,5 @@
 import CartCard from "./CartCard";
+
 export default function CartContainer({
   cartList,
   handleRemoveFromCart,
@@ -14,11 +15,11 @@ export default function CartContainer({
           {console.log(cartList)}
           {cartList.map((product) => (
             <CartCard
-              key={product.id}
+              key={product._id}
               {...product}
               handleRemoveFromCart={handleRemoveFromCart}
-              handleAddQuantity={handleAddQuantity}
-              handleRemoveQuantity={handleRemoveQuantity}
+              handleAddQuantity={handleAddQuantity} // specifically - FROM CART
+              handleRemoveQuantity={handleRemoveQuantity} // - FROM CART
             />
           ))}
           <div className="CartListBtns">
@@ -44,3 +45,15 @@ export default function CartContainer({
     </div>
   );
 }
+
+//      MY ORIGINAL Project 1 solution: FOR REFERENCE
+//
+//      {/*TURNARY gets confusing here, replaced with short circuit*/}
+//      {cart.length > 0 /*<--if left=TRUE, do RIGHT side, too*/ && (
+//        <div className="CartListBtns">
+//          <button onClick={handleEmptyCart}>EMPTY Cart</button>
+//          <button className="BuyButton">
+//            BUY (Total: ${totalPrice.toFixed(2)})
+//          </button>
+//        </div>
+//      )}
